@@ -1,0 +1,56 @@
+﻿@model PersonalInformation
+@{
+    ViewBag.Title = "EditPersonalInfo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>EditPersonalInfo</h2>
+
+@using (Html.BeginForm("EditPersonalInformation", "Home", FormMethod.Post))
+{
+   
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.FirstName)
+        @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.LastName)
+        @Html.TextBoxFor(model => model.LastName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.DateOfBirth)
+        @Html.TextBoxFor(model => model.DateOfBirth, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+        @Html.ValidationMessageFor(model => model.DateOfBirth, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Gender)
+        @Html.DropDownListFor(model => model.Gender, new SelectList(new[]
+        {
+            new SelectListItem { Text = "Male", Value = "Male" },
+            new SelectListItem { Text = "Female", Value = "Female" },
+            new SelectListItem { Text = "Other", Value = "Other" }
+        }, "Value", "Text"), "Select Gender", new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Nationality)
+        @Html.TextBoxFor(model => model.Nationality, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Nationality, "", new { @class = "text-danger" })
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Phone)
+        @Html.TextBoxFor(model => model.Phone, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Phone, "", new { @class = "text-danger" })
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+}

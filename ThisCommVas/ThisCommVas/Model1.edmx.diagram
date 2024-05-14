@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="3e6be371d27c490395f2d9facb54f207" Name="Diagram1" ZoomLevel="80">
+        <EntityTypeShape EntityType="CommVasModel.Cart" Width="1.5" PointX="7.5" PointY="7.25" />
+        <EntityTypeShape EntityType="CommVasModel.categories" Width="1.5" PointX="3" PointY="11.125" />
+        <EntityTypeShape EntityType="CommVasModel.checkout" Width="1.5" PointX="10.5" PointY="7.25" />
+        <EntityTypeShape EntityType="CommVasModel.PersonalInformation" Width="1.5" PointX="5.625" PointY="12.5" />
+        <EntityTypeShape EntityType="CommVasModel.product_image" Width="1.5" PointX="7.5" PointY="10.625" />
+        <EntityTypeShape EntityType="CommVasModel.products" Width="1.5" PointX="5.25" PointY="6.625" />
+        <EntityTypeShape EntityType="CommVasModel.Roles" Width="1.5" PointX="0.75" PointY="4.75" />
+        <EntityTypeShape EntityType="CommVasModel.Status" Width="1.5" PointX="0.75" PointY="7.75" />
+        <EntityTypeShape EntityType="CommVasModel.stores" Width="1.5" PointX="3" PointY="3.375" />
+        <EntityTypeShape EntityType="CommVasModel.users" Width="1.5" PointX="3" PointY="6.875" />
+        <AssociationConnector Association="CommVasModel.FK__Cart__ProductId__6477ECF3" />
+        <AssociationConnector Association="CommVasModel.FK__Cart__UserId__6383C8BA" />
+        <AssociationConnector Association="CommVasModel.FK_products_caetgories" />
+        <AssociationConnector Association="CommVasModel.FK_checkout_products" />
+        <AssociationConnector Association="CommVasModel.FK_checkout_stores" />
+        <AssociationConnector Association="CommVasModel.FK_checkout_users" />
+        <AssociationConnector Association="CommVasModel.FK_User" />
+        <AssociationConnector Association="CommVasModel.FK_product_image_product_image" />
+        <AssociationConnector Association="CommVasModel.FK_Products_Store" />
+        <AssociationConnector Association="CommVasModel.FK_products_users" />
+        <AssociationConnector Association="CommVasModel.FK_users_Roles" />
+        <AssociationConnector Association="CommVasModel.FK_users_Status" />
+        <EntityTypeShape EntityType="CommVasModel.Transactions" Width="1.5" PointX="7.625" PointY="3.875" IsExpanded="true" />
+        <AssociationConnector Association="CommVasModel.FK_Transactions_users" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

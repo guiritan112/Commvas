@@ -1,0 +1,220 @@
+﻿@model ThisCommVas.Transactions
+@{
+    ViewBag.Title = "Index";
+    var productList = ViewBag.Products as List<ThisCommVas.products>;
+}
+
+<h2>CommVas</h2>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Shop Homepage - CommVas</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <!-- Bootstrap icons-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="~/Functions/Container.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+<body>
+
+    <!-- Navigation-->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container px-4 px-lg-5">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="@Url.Action("EditPersonalInfo", "Home")">Profile</a></li>
+                    <li class="nav-item"><a class="nav-link" href="@Url.Action("About","Home")">About</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categories</a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="@Url.Action("Index", "Home")">All Categories</a></li>
+
+                            @foreach (var category in ViewBag.Categories)
+                            {
+                                <li><a class="dropdown-item" href="@Url.Action("Index", "Home", new { category_Id = category.category_Id })">@category.category_Name</a></li>
+                            }
+                        </ul>
+                    </li>
+
+                    
+                        <li class="nav-item"><a class="nav-link" href="@Url.Action("Index", "UserApproval")">Requests</a></li>
+                      
+                    
+                    @if (User.IsInRole("Admin") || User.IsInRole("Artist"))
+                    {
+                        <li class="nav-item"><a class="nav-link" href="@Url.Action("Add", "AddProduct")">Add Product</a></li>
+                    }
+
+                    <li class="nav-item"><a class="nav-link" href="@Url.Action("Logout", "Home")">Logout</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="@Url.Action("Transactions", "Cart")">Transactions</a>
+
+                    </li>
+
+                </ul>
+
+                <form class="d-flex" action="@Url.Action("Index", "Cart")" method="get">
+
+                    <button class="btn btn-outline-dark" type="submit">
+                        <i class="bi-cart-fill me-1"></i>
+                        Cart
+                        <span id="cart-count" class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+    <!-- Header-->
+    <header class="bg-dark py-5">
+        <div class="container px-4 px-lg-5 my-5">
+            <div class="text-center text-white">
+                <h1 class="display-4 fw-bolder">Shop in style</h1>
+                <p class="lead fw-normal text-white-50 mb-0">With CommVas</p>
+            </div>
+        </div>
+    </header>
+    <form class="d-flex mb-3" id="product-search-form">
+        <input class="form-control form-control-sm me-2" type="search" placeholder="Search" aria-label="Search" id="product-search-input">
+        <button class="btn btn-outline-primary btn-sm" type="submit" id="search-btn">Search</button>
+    </form>
+
+    <!-- Image Grid -->
+    <section class="py-5" id="image-grid" style="display: @(productList != null && productList.Any() ? "block" : "none")">
+        <div class="container px-4 px-lg-5 mt-5">
+            <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-2 row-cols-xl-3 justify-content-center">
+                @if (productList != null && productList.Any())
+                {
+                    foreach (var product in productList)
+                    {
+                        if (product.product_image != null && product.product_image.Any())
+                        {
+                            var firstImage = product.product_image.FirstOrDefault();
+
+                            <div class="col mb-5">
+                                <div class="card h-100 position-relative">
+
+                                    <img src="data:image;base64,@Convert.ToBase64String(firstImage.image_path)" class="card-img-top product-image" alt="@product.name" style="object-fit: cover;">
+
+                                    <div class="card-body">
+                                        <h5 class="card-title">
+                                            <a href="#" data-bs-toggle="modal" data-bs-target="#productPreview-@product.product_id">@product.name</a>
+                                        </h5>
+                                        <div class="d-flex justify-content-end align-items-center mt-3">
+                                            @if (User.IsInRole("Admin"))
+                                            {
+                                                <div>
+                                                    <button class="btn btn-danger btn-sm delete-product-btn" data-product-id="@product.product_id" data-delete-url="@Url.Action("Delete", "DeleteProduct", new { productId = product.product_id })">
+                                                        <i class="bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                                <div>
+                                                    <a href="@Url.Action("Index", "Edit", new { productId = product.product_id })" class="btn btn-primary btn-sm edit-product-btn">
+                                                        <i class="bi-pencil"></i>
+                                                    </a>
+                                                </div>
+                                            }
+                                            <div>
+                                                <button class="btn btn-success btn-sm add-to-cart" data-product-id="@product.product_id" data-add-to-cart-url="@Url.Action("AddToCart", "Cart")"><i class="bi-cart-plus"></i></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Product Preview Modal -->
+                            <div class="modal fade" id="productPreview-@product.product_id" tabindex="-1" aria-labelledby="productPreviewLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div id="productCarousel-@product.product_id" class="carousel slide" data-bs-ride="carousel">
+                                                        <div class="carousel-inner">
+                                                            @foreach (var image in product.product_image)
+                                                            {
+                                                                <div class="carousel-item @(image == firstImage ? "active" : "")">
+                                                                    <img src="data:image;base64,@Convert.ToBase64String(image.image_path)" class="d-block w-100" alt="@product.name">
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                        <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel-@product.product_id" data-bs-slide="prev">
+                                                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                            <span class="visually-hidden">Previous</span>
+                                                        </button>
+                                                        <button class="carousel-control-next" type="button" data-bs-target="#productCarousel-@product.product_id" data-bs-slide="next">
+                                                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                            <span class="visually-hidden">Next</span>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title">Name: @product.name</h5>
+                                                        <hr class="my-1"> <!-- Thin line separator -->
+                                                        <p class="card-text">Description: @product.description</p>
+                                                        <hr class="my-1"> <!-- Thin line separator -->
+                                                        <p class="fw-bold mt-2">Price: $@product.price</p>
+                                                        <hr class="my-1"> <!-- Thin line separator -->
+                                                        <p class="fw-bold mt-3">Quantity: @product.quantity</p>
+                                                        <hr class="my-1"> <!-- Thin line separator -->
+                                                        <p class="fw-bold mt-4">Store: @product.store_id</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+                else
+                {
+                    <div class="col mb-5">
+                        <div class="card h-100">
+                            <div class="card-body p-4">
+                                <div class="text-center">
+                                    <h5 class="fw-bolder">No products available</h5>
+                                    <p>Check back later for more products.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-5 bg-dark">
+        <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Your Website 2023</p></div>
+    </footer>
+    <script>
+        var indexUrl = '@Url.Action("Index", "Home")';
+        var searchUrl = "@Url.Action("Search", "Home")";
+    </script>
+
+    <!-- Bootstrap core JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Your custom scripts -->
+    <script src="~/Functions/This.js"></script>
+    <script src="~/Functions/Edit.js"></script>
+    <script src="~/Functions/Search.js"></script>
+
+
+</body>
+</html>

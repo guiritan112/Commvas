@@ -1,0 +1,195 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login 04</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/Functions/Login.css">
+    <style>
+        .form-control.full-width {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <section class="ftco-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h3 class="text-center mb-4">Register</h3>
+                            <div id="errorMessage" class="alert alert-danger" role="alert" style="display: none;"></div>
+                            <!-- Display data received from the second part -->
+                            <div id="registeredData" style="display: none;"></div>
+                            <form id="registrationForm" action="javascript:void(0);" method="post">
+                                <div class="form-group">
+                                    <label for="email">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="username">Username</label>
+                                    <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="RoleId">Role</label>
+                                    <select class="form-control" id="RoleId" name="RoleId" required>
+                                        <option value="">Select Role</option>
+                                        <option value="1">Admin</option>
+                                        <option value="2">Artist</option>
+                                    </select>
+                                </div>
+                                <input type="hidden" id="registrationActionUrl" value="@Url.Action("Registration", "Register")">
+                                <button type="button" id="nextButton" class="btn btn-primary btn-block">Next</button>
+                            </form>
+                            <div id="personalInfoForm" class="mt-4" style="display: none;">
+                                <h5 class="text-center mb-4">Personal Information</h5>
+                                <div class="form-group">
+                                    <label for="firstName">First Name</label>
+                                    <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Enter your first name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lastName">Last Name</label>
+                                    <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Enter your last name" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="dob">Date of Birth</label>
+                                    <input type="date" class="form-control" id="dob" name="dob" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="gender">Gender</label>
+                                    <select class="form-control" id="gender" name="gender" required>
+                                        <option value="">Select gender</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="nationality">Nationality</label>
+                                    <input type="text" class="form-control" id="nationality" name="nationality" placeholder="Enter your nationality" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone Number</label>
+                                    <input type="number" class="form-control" id="phone" name="phone" placeholder="Enter your phone number" required>
+                                </div>
+                                <button type="button" id="submitPersonalInfo" class="btn btn-primary btn-block">Submit</button>
+                            </div>
+                            <p class="text-center mt-3">Already a member? <a href="@Url.Action("Index", "Login")">Sign In</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Inside the <script> tag in your HTML -->
+    <script>
+
+    $(document).ready(function () {
+        // Event listener for the "Next" button
+        $("#nextButton").click(function () {
+            // Get the values from the form
+            var email = $("#email").val();
+            var username = $("#username").val();
+
+            // Check if email and username are empty
+            if (email.trim() === '' || username.trim() === '') {
+                $("#errorMessage").text("Please fill in all fields.");
+                $("#errorMessage").show();
+                return;
+            }
+
+            // Perform asynchronous check for uniqueness
+            $.ajax({
+                url: "@Url.Action("CheckUnique", "Register")",
+                method: "POST",
+                data: { email: email, username: username },
+                success: function (response) {
+                    if (response.unique) {
+                        // If both email and username are unique, proceed to the next part
+                        $("#errorMessage").hide();
+                        $("#registrationForm").hide();
+                        $("#personalInfoForm").show();
+                    } else {
+                        // If email or username already exists, show error message
+                        $("#errorMessage").text("Email or username already exists.");
+                        $("#errorMessage").show();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Handle error response, if any
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+
+        // Event listener for submitting personal information
+        $("#submitPersonalInfo").click(function () {
+            // Get the values from both parts of the form
+            var email = $("#email").val();
+            var username = $("#username").val();
+            var password = $("#password").val();
+            var roleId = $("#RoleId").val();
+            var firstName = $("#firstName").val();
+            var lastName = $("#lastName").val();
+            var dob = $("#dob").val();
+            var gender = $("#gender").val();
+            var nationality = $("#nationality").val();
+            var phone = $("#phone").val();
+
+            // Check if any field is empty
+            if (email.trim() === '' || username.trim() === '' || password.trim() === '' || roleId.trim() === '' || firstName.trim() === '' || lastName.trim() === '' || dob.trim() === '' || gender.trim() === '' || nationality.trim() === '' || phone.trim() === '') {
+                $("#errorMessage").text("Please fill in all fields.");
+                $("#errorMessage").show();
+                return;
+            }
+
+            // Combine data from both parts of the form
+            var formData = {
+                email: email,
+                username: username,
+                password: password,
+                RoleId: roleId,
+                firstName: firstName,
+                lastName: lastName,
+                dob: dob,
+                gender: gender,
+                nationality: nationality,
+                phone: phone
+            };
+
+            // Display the complete form data
+            $("#registeredData").html("<h5>Registered Data:</h5>" + JSON.stringify(formData));
+            $("#registeredData").show();
+
+            // Send the data to the backend for processing
+            $.ajax({
+                url: "@Url.Action("Registration", "Register")",
+                method: "POST",
+                data: formData,
+                success: function (response) {
+                    // Handle success response, e.g., redirect to login page
+                    window.location.href = "@Url.Action("Index", "Login")";
+                },
+                error: function (xhr, status, error) {
+                    // Handle error response, if any
+                    console.error(xhr.responseText);
+                }
+            });
+        });
+    });
+    </script>
+
+
+
+
+</body>
+</html>

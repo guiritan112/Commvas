@@ -1,0 +1,117 @@
+﻿<!-- Include SweetAlert library -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<div class="container">
+    <div class="py-5 text-center">
+        <h2>Checkout</h2>
+    </div>
+
+    <div class="row">
+        <div class="col-md-7 order-md-1">
+            <h4 class="mb-3">Billing address</h4>
+            <form id="checkoutForm" class="needs-validation" novalidate>
+                <div class="row">
+                    <!-- First name input -->
+                    <div class="col-md-6 mb-3">
+                        <label for="firstName">First name</label>
+                        <input type="text" class="form-control" id="firstName" placeholder="" value="@ViewBag.FirstName" required>
+                        <div class="invalid-feedback">Valid first name is required.</div>
+                    </div>
+                    <!-- Last name input -->
+                    <div class="col-md-6 mb-3">
+                        <label for="lastName">Last name</label>
+                        <input type="text" class="form-control" id="lastName" placeholder="" value="@ViewBag.LastName" required>
+                        <div class="invalid-feedback">Valid last name is required.</div>
+                    </div>
+                </div>
+
+                <!-- Email input -->
+                <div class="mb-3">
+                    <label for="email">Email <span class="text-muted">(Optional)</span></label>
+                    <input type="email" class="form-control" id="email" placeholder="you@example.com" value="@ViewBag.Email">
+                    <div class="invalid-feedback">Please enter a valid email address for shipping updates.</div>
+                </div>
+
+                <input type="hidden" id="userId" value="@ViewBag.UserId"> <!-- Hidden input field for userId -->
+
+                <hr class="mb-4">
+
+                <!-- Payment options -->
+                <h4 class="mb-3">Payment</h4>
+                <!-- Payment method options -->
+                <div class="d-block my-3">
+                    <div class="custom-control custom-radio">
+                        <input id="credit" name="paymentMethod" type="radio" class="custom-control-input" checked required>
+                        <label class="custom-control-label" for="credit">Credit card</label>
+                    </div>
+                    <!-- Add more payment method options if needed -->
+                </div>
+
+                <div class="row">
+                    <!-- Name on card input -->
+                    <div class="col-md-6 mb-3">
+                        <label for="cc-name">Name on card</label>
+                        <input type="text" class="form-control" id="cc-name" placeholder="" required>
+                        <small class="text-muted">Full name as displayed on card</small>
+                        <div class="invalid-feedback">Name on card is required</div>
+                    </div>
+                </div>
+                <hr class="mb-4">
+                <!-- Checkout button -->
+                <button id="checkoutBtn" class="btn btn-primary btn-lg btn-block" type="button">Continue to checkout</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Function to send thank you message using SweetAlert
+    function sendThankYou() {
+        Swal.fire({
+            title: 'Thank you for your purchase!',
+            icon: 'success',
+            showCancelButton: false,
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/"; // Redirect to homepage
+            }
+        });
+    }
+    // Event listener for the checkout button
+    document.getElementById("checkoutBtn").addEventListener("click", function (event) {
+        event.preventDefault(); // Prevent form submission
+        sendThankYou(); // Send thank you message
+        sendInvoice(); // Send invoice data to server
+    });
+
+    // Function to send invoice data to server using AJAX
+    function sendInvoice() {
+        var userId = document.getElementById("userId").value; // Get userId from hidden input
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/Cart/Checkout", true); // Endpoint to the Checkout action method
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        // Example invoice data (replace with actual invoice data)
+        var invoiceData = {
+            userId: parseInt(userId), // Parse userId to ensure it's an integer
+            firstName: document.getElementById("firstName").value,
+            lastName: document.getElementById("lastName").value,
+            email: document.getElementById("email").value,
+            // Add more fields as needed
+        };
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                console.log("Transaction recorded successfully");
+                // Redirect to home/index after sending invoice
+                window.location.href = "/Home/Index";
+            }
+        };
+
+        xhr.send(JSON.stringify(invoiceData));
+    }
+</script>

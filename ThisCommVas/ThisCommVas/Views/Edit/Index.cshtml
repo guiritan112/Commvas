@@ -1,0 +1,80 @@
+﻿@model ThisCommVas.products
+
+@{
+    ViewBag.Title = "Edit Product";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Edit Product</h2>
+
+@using (Html.BeginForm("SaveEditedProduct", "Edit", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.HiddenFor(model => model.product_id)
+
+    <div class="form-group">
+        <label for="name">Name</label>
+        @Html.TextBoxFor(model => model.name, new { @class = "form-control", required = "required" })
+    </div>
+
+    <div class="form-group">
+        <label for="description">Description</label>
+        @Html.TextAreaFor(model => model.description, new { @class = "form-control", rows = "4", required = "required" })
+    </div>
+
+    <div class="form-group">
+        <label for="price">Price</label>
+        @Html.TextBoxFor(model => model.price, new { @class = "form-control", type = "number", step = "0.01", required = "required" })
+    </div>
+
+    <div class="form-group">
+        <label for="quantity">Quantity</label>
+        @Html.TextBoxFor(model => model.quantity, new { @class = "form-control", type = "number", required = "required", min = "1" })
+    </div>
+
+    <div class="form-group">
+        <label for="category">Category</label>
+        <select class="form-control" id="Category_Id" name="Category_Id" required>
+            <option value="">Select Category</option>
+            @foreach (var category in ViewBag.Categories)
+            {
+                <option value="@category.category_Id" @(category.category_Id == Model.category_Id ? "selected" : "")>@category.category_Name</option>
+            }
+        </select>
+        @Html.ValidationMessageFor(model => model.category_Id)
+    </div>
+
+    <div class="form-group">
+        <label for="store">Store</label>
+        <select class="form-control" id="Store_Id" name="Store_Id" required>
+            <option value="">Select Store</option>
+            @foreach (var store in ViewBag.Stores)
+            {
+                <option value="@store.store_id" @(store.store_id == Model.store_id ? "selected" : "")>@store.store_name - @store.location</option>
+            }
+        </select>
+        @Html.ValidationMessageFor(model => model.store_id)
+    </div>
+
+    <div id="imageUploadContainer">
+        @foreach (var image in Model.product_image)
+        {
+            <div class="form-group">
+                <label for="image@(image.id)">Image @(image.id)</label>
+                <input type="file" name="images[@(image.id)]" class="form-control-file" />
+                @if (image.image_path != null && image.image_path.Length > 0)
+                {
+                    <img src="@Url.Action("GetImage", "Product", new { id = image.id })" alt="Product Image @(image.id)" class="img-thumbnail" />
+                }
+            </div>
+        }
+
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+}
+
+@section Scripts {
+    <!-- Include your custom JavaScript file -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/Functions/Edit.js"></script>
+}
